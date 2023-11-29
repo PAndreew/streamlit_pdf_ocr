@@ -2,7 +2,9 @@ import streamlit as st
 import pytesseract
 from PIL import Image
 from PyPDF2 import PdfReader
+from pdf2image import convert_from_path
 import io
+import tempfile
 
 # Set the title of the app
 st.title('PDF OCR App')
@@ -11,15 +13,23 @@ st.title('PDF OCR App')
 uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
 
 if uploaded_file is not None:
-    # Read the PDF file
-    reader = PdfReader(uploaded_file)
-    num_pages = len(reader.pages)
+    # Save the uploaded PDF to a temporary file
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmpfile:
+        tmpfile.write(uploaded_file.getvalue())
+        pdf_path = tmpfile.name
 
-    # Loop through each page
-    for page in range(num_pages):
-        st.write(f'Page {page+1}')
-        page_obj = reader.pages[page]
+    # Convert PDF to a list of images
+    pages = convert_from_path(pdf_path, 500)
 
-        # Extract text from page (you can also convert to image and use OCR)
-        page_text = page_obj.extractText()
+    # Loop through each page/image
+    for i, page_image in enumerate(pages):
+        st.write(f'Page {i+1}')
+
+        # Convert PIL Image to bytes
+        with io.BytesIO() as output:
+            page_image.save(output, format="JPEG")
+            page_image_bytes = output.getvalue()
+
+        # Apply OCR to the image
+        page_text = pytesseract.image_to_string(Image.open(io.BytesIO(page_image_bytes)))
         st.text_area("Extracted Text", page_text, height=250)
