@@ -13,7 +13,7 @@ uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
 if uploaded_file is not None:
     # Read the PDF file
     reader = PdfReader(uploaded_file)
-    num_pages = reader.getNumPages()
+    num_pages = len(reader.pages)
 
     # Loop through each page
     for page in range(num_pages):
