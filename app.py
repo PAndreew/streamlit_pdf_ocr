@@ -18,7 +18,7 @@ if uploaded_file is not None:
     # Loop through each page
     for page in range(num_pages):
         st.write(f'Page {page+1}')
-        page_obj = reader.getPage(page)
+        page_obj = reader.pages[page]
 
         # Extract text from page (you can also convert to image and use OCR)
         page_text = page_obj.extractText()
