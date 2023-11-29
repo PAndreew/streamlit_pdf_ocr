@@ -1,7 +1,7 @@
 import streamlit as st
 import pytesseract
 from PIL import Image
-from PyPDF2 import PdfFileReader
+from PyPDF2 import PdfReader
 import io
 
 # Set the title of the app
@@ -12,7 +12,7 @@ uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
 
 if uploaded_file is not None:
     # Read the PDF file
-    reader = PdfFileReader(uploaded_file)
+    reader = PdfReader(uploaded_file)
     num_pages = reader.getNumPages()
 
     # Loop through each page
